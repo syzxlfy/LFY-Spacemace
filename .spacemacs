@@ -1,9 +1,8 @@
-;;
-;;==========================================================================================
-;; 文件名：.Spacemacs
-;; Time-stamp: <此文件由 DELL790-LFY 修改--最后修改时间为：2020年01月23日 10时29分04秒>
-;;==========================================================================================
-;;
+;;------------------------------------------------------------------------------------------
+;; 文件名：~/.spacemacs
+;; Time-stamp: <此文件由 syzxg 修改--最后修改时间为：2020年11月10日 20时08分26秒>
+;;------------------------------------------------------------------------------------------
+
 ;; -*- mode: emacs-lisp; lexical-binding: t -*-
 ;; This file is loaded by Spacemacs at startup.
 ;; It must be stored in your home directory.
@@ -32,7 +31,6 @@ This function should only modify configuration layer settings."
    ;; a layer lazily. (default t)
    dotspacemacs-ask-for-lazy-installation t
 
-   ;; If non-nil layers with lazy install support are lazy installed.
    ;; List of additional paths where to look for configuration layers.
    ;; Paths must have a trailing slash (i.e. `~/.mycontribs/')
    dotspacemacs-configuration-layer-path '()
@@ -45,23 +43,29 @@ This function should only modify configuration layer settings."
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
      ;; `M-m f e R' (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     helm
      auto-completion
      better-defaults
      emacs-lisp
      git
-     ;;markdown
-     neotree
+     helm
+     ;; lsp
+     ;; markdown
+     multiple-cursors
      org
      ;; (shell :variables
      ;;        shell-default-height 30
-     ;;        ;;shell-default-shell 'eshell
      ;;        shell-default-position 'bottom)
-     spell-checking
-     syntax-checking
+     ;; spell-checking
+     ;; syntax-checking
      ;; version-control
-     ;;gtd
-     html
+     treemacs
+
+     ;;以下为另外添加
+     (chinese :variables
+              chinese-default-input-method 'wubi
+              chinese-enable-youdao-dict t )
+     ;;tabnine ;;TabNine是一款基于GPT-2深度学习算法的代码补全工具，它支持23种编程语言，6种编辑器（Emacs, Vim, Visual Studio Code, Atom, IntelliJ IDEA, Sublime Text
+               ;;  等），TabNine除了能在pop框中提示补全信息之外，还能给出各个候选词条的概率，效果十分惊艳。tabnine 为私有layer , 在private下。
 
      )
 
@@ -72,19 +76,12 @@ This function should only modify configuration layer settings."
    ;; To use a local version of a package, use the `:location' property:
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
-   ;; 安装另外的包（不在层中的）
-   dotspacemacs-additional-packages '(
-                                      youdao-dictionary
-                                      ;;editorconfig
-                                      ;;org-download
-                                      )
+   dotspacemacs-additional-packages '()
 
    ;; A list of packages that cannot be updated.
-   ;; 列表中的包不被更新
    dotspacemacs-frozen-packages '()
 
    ;; A list of packages that will not be installed and loaded.
-   ;; 列表中的包将不会安装和加载
    dotspacemacs-excluded-packages '()
 
    ;; Defines the behaviour of Spacemacs when installing packages.
@@ -94,7 +91,6 @@ This function should only modify configuration layer settings."
    ;; installs only the used packages but won't delete unused ones. `all'
    ;; installs *all* packages supported by Spacemacs and never uninstalls them.
    ;; (default is `used-only')
-   ;; 当安装包时，定义Spacemacs的行为。
    dotspacemacs-install-packages 'used-only))
 
 (defun dotspacemacs/init ()
@@ -111,10 +107,10 @@ It should only modify the values of Spacemacs settings."
    ;; (default nil)
    dotspacemacs-enable-emacs-pdumper nil
 
-   ;; File path pointing to emacs 27.1 executable compiled with support
-   ;; for the portable dumper (this is currently the branch pdumper).
-   ;; (default "emacs-27.0.50")
-   dotspacemacs-emacs-pdumper-executable-file "emacs-27.0.50"
+   ;; Name of executable file pointing to emacs 27+. This executable must be
+   ;; in your PATH.
+   ;; (default "emacs")
+   dotspacemacs-emacs-pdumper-executable-file "emacs"
 
    ;; Name of the Spacemacs dump file. This is the file will be created by the
    ;; portable dumper in the cache directory under dumps sub-directory.
@@ -148,8 +144,8 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-use-spacelpa nil
 
    ;; If non-nil then verify the signature for downloaded Spacelpa archives.
-   ;; (default nil)
-   dotspacemacs-verify-spacelpa-archives nil
+   ;; (default t)
+   dotspacemacs-verify-spacelpa-archives t
 
    ;; If non-nil then spacemacs will check for updates at startup
    ;; when the current branch is not `develop'. Note that checking for
@@ -170,8 +166,10 @@ It should only modify the values of Spacemacs settings."
    ;; (default 'vim)
    dotspacemacs-editing-style 'vim
 
-   ;; If non-nil output loading progress in `*Messages*' buffer. (default nil)
-   dotspacemacs-verbose-loading nil
+   ;; If non-nil show the version string in the Spacemacs buffer. It will
+   ;; appear as (spacemacs version)@(emacs version)
+   ;; (default t)
+   dotspacemacs-startup-buffer-show-version t
 
    ;; Specify the startup banner. Default value is `official', it displays
    ;; the official spacemacs logo. An integer value is the index of text
@@ -193,6 +191,11 @@ It should only modify the values of Spacemacs settings."
    ;; True if the home buffer should respond to resize events. (default t)
    dotspacemacs-startup-buffer-responsive t
 
+   ;; Default major mode for a new empty buffer. Possible values are mode
+   ;; names such as `text-mode'; and `nil' to use Fundamental mode.
+   ;; (default `text-mode')
+   dotspacemacs-new-empty-buffer-major-mode 'text-mode
+
    ;; Default major mode of the scratch buffer (default `text-mode')
    dotspacemacs-scratch-mode 'text-mode
 
@@ -213,17 +216,15 @@ It should only modify the values of Spacemacs settings."
    ;; refer to the DOCUMENTATION.org for more info on how to create your own
    ;; spaceline theme. Value can be a symbol or list with additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-   dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.2)
+   dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.1)
 
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
    dotspacemacs-colorize-cursor-according-to-state t
 
-   ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
-   ;; quickly tweak the mode-line size to make separators look not too crappy.
-   ;; 字体："等距更纱黑体 Slab SC" "Source Code Pro" "YaHei Consolas Hybrid"
-   dotspacemacs-default-font '("等距更纱黑体 Slab SC"
-                               :size 15
+   ;; Default font or prioritized list of fonts.
+   dotspacemacs-default-font '("等距更纱黑体 Slab SC"  ;;"Source Code Pro"
+                               :size 12.0
                                :weight normal
                                :width normal)
 
@@ -246,8 +247,10 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-major-mode-leader-key ","
 
    ;; Major mode leader key accessible in `emacs state' and `insert state'.
-   ;; (default "C-M-m")
-   dotspacemacs-major-mode-emacs-leader-key "C-M-m"
+   ;; (default "C-M-m" for terminal mode, "<M-return>" for GUI mode).
+   ;; Thus M-RET should work as leader key in both GUI and terminal modes.
+   ;; C-M-m also should work in terminal mode, but not in GUI mode.
+   dotspacemacs-major-mode-emacs-leader-key (if window-system "<M-return>" "C-M-m")
 
    ;; These variables control whether separate commands are bound in the GUI to
    ;; the key pairs `C-i', `TAB' and `C-m', `RET'.
@@ -324,7 +327,12 @@ It should only modify the values of Spacemacs settings."
    ;; If non-nil the frame is maximized when Emacs starts up.
    ;; Takes effect only if `dotspacemacs-fullscreen-at-startup' is nil.
    ;; (default nil) (Emacs 24.4+ only)
-   dotspacemacs-maximized-at-startup t ;;nil
+   dotspacemacs-maximized-at-startup nil
+
+   ;; If non-nil the frame is undecorated when Emacs starts up. Combine this
+   ;; variable with `dotspacemacs-maximized-at-startup' in OSX to obtain
+   ;; borderless fullscreen. (default nil)
+   dotspacemacs-undecorated-at-startup nil
 
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
@@ -353,10 +361,14 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-smooth-scrolling t
 
    ;; Control line numbers activation.
-   ;; If set to `t' or `relative' line numbers are turned on in all `prog-mode' and
-   ;; `text-mode' derivatives. If set to `relative', line numbers are relative.
+   ;; If set to `t', `relative' or `visual' then line numbers are enabled in all
+   ;; `prog-mode' and `text-mode' derivatives. If set to `relative', line
+   ;; numbers are relative. If set to `visual', line numbers are also relative,
+   ;; but lines are only visual lines are counted. For example, folded lines
+   ;; will not be counted and wrapped lines are counted as multiple lines.
    ;; This variable can also be set to a property list for finer control:
    ;; '(:relative nil
+   ;;   :visual nil
    ;;   :disabled-for-modes dired-mode
    ;;                       doc-view-mode
    ;;                       markdown-mode
@@ -364,6 +376,7 @@ It should only modify the values of Spacemacs settings."
    ;;                       pdf-view-mode
    ;;                       text-mode
    ;;   :size-limit-kb 1000)
+   ;; When used in a plist, `visual' takes precedence over `relative'.
    ;; (default nil)
    dotspacemacs-line-numbers t ;;nil
 
@@ -376,7 +389,7 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-smartparens-strict-mode nil
 
    ;; If non-nil pressing the closing parenthesis `)' key in insert mode passes
-   ;; over any automatically added closing parenthesis, bracket, quote, etc…
+   ;; over any automatically added closing parenthesis, bracket, quote, etc...
    ;; This can be temporary disabled by pressing `C-q' before `)'. (default nil)
    dotspacemacs-smart-closing-parenthesis nil
 
@@ -394,10 +407,16 @@ It should only modify the values of Spacemacs settings."
    ;; like \"~/.emacs.d/server\". It has no effect if
    ;; `dotspacemacs-enable-server' is nil.
    ;; (default nil)
-   dotspacemacs-server-socket-dir nil
+   dotspacemacs-server-socket-dir  t ;;nil
 
    ;; If non-nil, advise quit functions to keep server open when quitting.
    ;; (default nil)
+   ;; 持久化 Emacs 服务器
+   ;; 我们可以持久化 Emacs 服务器，在 Emacs 关闭的时候，服务器不被杀掉。
+   ;; 只要设置 ~/.spacemacs 中 dotspacemacs-persistent-server 为 t 即可
+   ;; 但这种情况下，我们只可以通过以下方式来杀掉服务器了：
+   ;; SPC q q 退出 Emacs 并杀掉服务器，会对已修改的 Buffer 给出保存的提示。
+   ;; SPC q Q 同上，但会丢失所有未保存的修改。
    dotspacemacs-persistent-server nil
 
    ;; List of search tool executable names. Spacemacs uses the first installed
@@ -422,7 +441,7 @@ It should only modify the values of Spacemacs settings."
    ;; %z - mnemonics of buffer, terminal, and keyboard coding systems
    ;; %Z - like %z, but including the end-of-line format
    ;; (default "%I@%S")
-   dotspacemacs-frame-title-format "%I@%S@%b"
+   dotspacemacs-frame-title-format "%I@%S"
 
    ;; Format specification for setting the icon title format
    ;; (default nil - same as frame-title-format)
@@ -433,7 +452,14 @@ It should only modify the values of Spacemacs settings."
    ;; `trailing' to delete only the whitespace at end of lines, `changed' to
    ;; delete only whitespace for changed lines or `nil' to disable cleanup.
    ;; (default nil)
-   dotspacemacs-whitespace-cleanup nil
+   dotspacemacs-whitespace-cleanup 'trailing ;;nil
+
+   ;; If non nil activate `clean-aindent-mode' which tries to correct
+   ;; virtual indentation of simple modes. This can interfer with mode specific
+   ;; indent handling like has been reported for `go-mode'.
+   ;; If it does deactivate it here.
+   ;; (default t)
+   dotspacemacs-use-clean-aindent-mode t
 
    ;; Either nil or a number of seconds. If non-nil zone out after the specified
    ;; number of seconds. (default nil)
@@ -458,43 +484,135 @@ This function is called immediately after `dotspacemacs/init', before layer
 configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
-  ;;解决Spacemacs 启动速度特别慢问题
+
+;;;;取消包管理密钥检查
+  (setq package-check-signature nil)
+
+;;;; 配置代理
+  ;; 连接国外的软件源由于网络问题, 通常较慢. 可以在 dotspacemacs/user-init 中设置代理
+  ;; proxy
+  ;; (setq url-proxy-services '(("no_proxy" . "127.0.0.1")
+  ;;                            ("http" . "127.0.0.1:1087")
+  ;;                            ("https" . "127.0.0.1:1087")
+  ;;                            ))
+
+;;;;解决Spacemacs 启动速度特别慢问题
   ;; https://github.com/syl20bnr/spacemacs/issues/2705
-  (setq tramp-ssh-controlmaster-options "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
-
-  ;; 设定配置层压缩包网站，从哪个地方下载
-  ;;ELPA中国镜像https://elpa.emacs-china.org/
-  (setq-default configuration-layer-elpa-archives
-                '(("melpa-cn" . "http://elpa.emacs-china.org/melpa/")
-                  ("org-cn"   . "http://elpa.emacs-china.org/org/")
-                  ("gnu-cn"   . "http://elpa.emacs-china.org/gnu/")
-                  ("melpa-stable" . "http://elpa.emacs-china.org/melpa-stable/")
-                  ("melpa-stable" . "http://stable.melpa.org/packages/")
-                  ("SC" . "http://elpa.emacs-china.org/sunrise-commander/")
-                  ("marmalade" . "http://elpa.emacs-china.org/marmalade/")
-                  ("user42" . "http://elpa.emacs-china.org/user42/")))
-  ;;ELPA镜像
+  (setq tramp-ssh-controlmaster-options
+        "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
+;;;; 设定配置层压缩包网站，从哪个地方下载？
+;;;; ELPA国外（最后）有些包国内装不上时，可以这个试试。特别是重新安装时要使用此。
   ;;(setq-default configuration-layer-elpa-archives
-  ;;              '(("gnu" . "http://elpa.gnu.org/packages/")
-  ;;                 ("org" . "http://orgmode.org/elpa/")
-  ;;                 ("melpa" . "http://melpa.org/packages/")
-  ;;                 ("melpa-stable" . "http://stable.melpa.org/packages/")))
-  ;;ELPA清华镜像
-  ;; (setq-default configuration-layer-elpa-archives
-  ;;              '(("melpa-cn" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
-  ;;                 ("gnu-cn" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-  ;;                 ("org-cn" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/org/")))
+  ;;               '(("gnu" . "http://elpa.gnu.org/packages/")
+  ;;                  ("org" . "http://orgmode.org/elpa/")
+  ;;                 ("melpa" . "http://melpa.org/packages/")))
+  ;;                  ("melpa-stable" . "http://stable.melpa.org/packages/")))
 
-  ;; 设置程序启动时界面，显示菜单及工具栏
+;;;;ELPA中国镜像（次选）  https://elpa.emacs-china.org/
+  (setq-default configuration-layer-elpa-archives
+                '(("gnu-cn"   . "http://elpa.emacs-china.org/gnu/")
+                  ("org-cn"   . "http://elpa.emacs-china.org/org/")
+                  ("melpa-cn" . "http://elpa.emacs-china.org/melpa/")
+                  ("melpa-stable" . "http://elpa.emacs-china.org/melpa-stable/")))
+  ;;                 ("SC" . "http://elpa.emacs-china.org/sunrise-commander/")
+  ;;                 ("marmalade" . "http://elpa.emacs-china.org/marmalade/")
+  ;;                 ("user42" . "http://elpa.emacs-china.org/user42/")))
+
+;;;;ELPA清华镜像（首选）
+  ;; (setq-default configuration-layer-elpa-archives
+  ;;            '(("gnu-cn" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+  ;;                ("org-cn" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
+  ;;                 ("melpa-cn" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
+  ;;                  ("marmalade" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/marmalade/")))
+
+;;;; 1.设置程序启动时界面，显示菜单及工具栏及快捷键
   (menu-bar-mode t);;菜单菜单显示
   (tool-bar-mode t);;工具栏显示
+  ;;F9(菜单栏显示切换) F10(激活菜单栏 使用方向键操作 子项) F9、F10系统默认
+  ;;F11(窗口标题栏显示切换)、F12(工具栏显示切换)
+  (global-set-key [f9] 'menu-bar-mode)  ;菜单栏显示切换
+  (global-set-key [f12] 'tool-bar-mode) ;工具栏显示切换
 
-  ;; 使用aspell代替ispell进行英文拼写检查（Aspell使用mysys中的）
+;;;; 2.设置时间戳time-stamp标志，在文件头部显示文件更改后的保存时间
+  ;;time-stamp在此文件头部设置时间标志，每次文件修改保存时，时间自动更新
+  ;;设置时间戳time-stamp标志在文件开始的10行以内, check first 10 buffer lines for Time-stamp: <>
+  (setq time-stamp-line-limit 10)
+  (add-hook 'write-file-functions 'time-stamp)
+  ;;(add-hook 'write-file-hooks 'time-stamp)
+  ;;设置time-stamp格式
+  ;;说明：
+  ;;%:u，更新时用系统登录的用户名替换
+  ;;%04y-%02m-%02d，更新时以“YYYY-MM-DD”的格式显示年月日
+  ;;%02H:%02M:%02S，更新时以“HH:MM:SS”的格式显示时分秒
+  (setq time-stamp-format
+        "此文件由 %:u 修改--最后修改时间为：%Y年%02m月%02d日 %02H时%02M分%02S秒"
+        time-stamp-active t
+        time-stamp-warn-inactive t)
+
+;;;; 3.保存时自动删除行尾空格及文件结尾空行
+  ;; 与前面dotspacemacs-whitespace-cleanup 'trailing 设置重复
+  ;;  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+;;;;使用ag搜索时，中文乱码,(还未解决)
+  ;;(modify-coding-system-alist 'process "ag" '(utf-8 . chinese-gbk-dos)
+  ;;(custom-set-variables '(helm-ag-base-command "ag --vimgrep --no-heading --smart-case"))
+  ;; (defun my/helm-ag-gbk (&rest args)
+  ;;   (set-terminal-coding-system nil)
+  ;;   (set-keyboard-coding-system nil)
+  ;;   (set-language-environment 'chinese-gbk)
+  ;;   ;;(modify-coding-system-alist 'process "ag" '(utf-8 . chinese-gbk-dos))
+  ;;   )
+  ;;(advice-add 'helm-do-ag :before #'my/helm-ag-gbk)
+
+  (add-to-list 'exec-path "d:/msys64/")
+  ;;添加搜索工具ag.exe路径
+  (add-to-list 'exec-path "d:/msys64/mingw64/bin")
+  ;;(add-to-list 'exec-path "d:/Program Files/LLVM/bin/")
+
+;;;; 4.逗号后自动加空格,
+  (global-set-key (kbd ",")
+                  #'(lambda ()
+                      (interactive)
+                      (insert ", ")))
+
+;;;; 5. 插入当前(日期)-F7---------
+  (defun insert-current-date ()
+    "Insert the current date"
+    (interactive "*")
+    (insert (format-time-string "%Y/%m/%d" (current-time))))
+  (global-set-key (kbd "<f7>") 'insert-current-date)
+
+
+;;;; 6. 插入当前(时间)-F8---------
+  ;; (defun insert-current-time ()
+  ;;   "Insert the current time"
+  ;;   (interactive "*")
+  ;;   (insert (format-time-string "%H:%M:%S" (current-time))))
+  ;; (global-set-key (kbd "<f8>") 'insert-current-time)
+
+;;;; 7. 插入当前(日期+时间)-F6---------
+  (defun insert-current-time ()
+    "Insert the current time"
+    (interactive "*")
+    (insert (format-time-string "%Y/%m/%d %H:%M:%S" (current-time))))
+  (global-set-key (kbd "<f6>") 'insert-current-time)
+
+;;;; 8. 解决进入eshell后，运行编译后C++程序时中文乱码问题。
+  (with-eval-after-load 'eshell
+    (set-language-environment "chinese-GB")
+    )
+;;;; 9. 保存时自动删除行尾空格及文件结尾空行
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+  ;; 10. 使用aspell代替ispell进行英文拼写检查（Aspell使用mysys中的）
   (add-to-list 'exec-path "d:/msys64/usr/bin/")
   (setq ispell-program-name "aspell")
   (setq-default ispell-program-name "aspell")
   ;; use American English as ispell default dictionary
   (ispell-change-dictionary "american" t)
+  ;;;; Emacs 文本显示设置 去掉换行的箭头(屏幕上显示的)
+  (global-visual-line-mode t)
+
   )
 
 (defun dotspacemacs/user-load ()
@@ -502,6 +620,7 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
 This function is called only while dumping Spacemacs configuration. You can
 `require' or `load' the libraries of your choice that will be included in the
 dump."
+  ;;(require 'unicad)
   )
 
 (defun dotspacemacs/user-config ()
@@ -510,102 +629,238 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
-  ;; 自己的配置
-  ;; Drag-and-drop to `dired`
- ;; (add-hook 'dired-mode-hook 'org-download-enable)
 
 
-  ;;2017年8月3日
-  ;;在 spacemacs 启动时显示当前路径的文件夹视图，需要修改 .spacemacs 配置文件中的 dotspacemacs/user-config 函数。
-  ;;以下即为加入的内容（neotree-show)
-  ;; (neotree-show);;前面已有启用
-  (global-set-key [f9] 'neotree-toggle)
+  ;;==========================================================================================
+;;;; C-C++自动补全
+  ;;==========================================================================================
+  (add-hook 'c++-mode-hook
+            (lambda ()
+              (setq company-backends '(company-yasnippet))))
+;;;; 智能编译C-C++等程序
+  (add-to-list 'load-path "~/.emacs.d/addons/smart-compile")
+  (require 'smart-compile)
+  (global-set-key [f8] 'smart-compile)
 
-  ;; 保存时自动删除行尾空格及文件结尾空行
-  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+;;;; 解决搜索工具rg、pt 中文乱码问题, 推荐使用rg, 快捷方式spc s r
+  (modify-coding-system-alist 'process "rg" '(utf-8 . chinese-gbk-dos))
+  (modify-coding-system-alist 'process "pt" '(utf-8 . chinese-gbk-dos))
 
-  ;;时间设置
-  ;; 启用时间显示设置，在minibuffer上面的那个杠上
-  (display-time-mode t)
-  ;; 使用24小时制
-  (setq display-time-24hr-format t)
+;;;; org-mode 配置重要提示
+  ;; spacemacs 使用 org ELPA 仓库中的版本, 而不是 emacs 自带的 org.
+  ;; 所有与 org-mode 相关的配置都需要放在 with-eval-after-load 代码块中 , 否则会载 入 emacs 自带的 org 版本,
+  ;; 造成版本冲突从而引起各种奇怪的 org-mode 相关的报错.
+  ;; 形式如下：
+  ;; (with-eval-after-load 'org
+  ;;   ;; here goes your Org config :)
+  ;;   ;; ....
+  ;;   )
+  (with-eval-after-load 'org
 
-  ;; editorconfig 是在项目存储库中有一个名为 .editorconfig 的文件，这样参与的开发者的编辑和 ide 可以自动调整。
-  ;; 有一个 emacs/spacemacs 模式，可以很容易地在以下步骤中进行集成：
-  ;; 1）将 editorconfig 添加到 dotspacemacs-additional-packages。
-  ;; 2）将（editorconfig-mode 1）添加到 dotspacemacs/user-config。
-  ;;(editorconfig-mode t)
-
-
-  ;;逗号后自动加空格
-  (global-set-key (kbd ",")
-                  #'(lambda ()
-                      (interactive)
-                      (insert ", ")))
-
-  ;; 设置屏幕显示区(文字)自动动换行
-  (add-hook 'hack-local-variables-hook (lambda () (setq truncate-lines nil)))
-
-  ;; Emacs 文本显示设置 去掉换行的箭头(屏幕上显示的)
-  (global-visual-line-mode t)
-
-  ;; 设置时间戳time-stamp
-  ;;time-stamp在此文件头部设置时间标志，每次文件修改保存时，时间自动更新
-  (setq time-stamp-line-limit 10) ; check first 10 buffer lines for Time-stamp: <>
-  (add-hook 'write-file-hooks 'time-stamp)
-  ;;设置time-stamp格式
-  ;;说明：
-  ;;%:u，更新时用系统登录的用户名替换
-  ;;%04y-%02m-%02d，更新时以“YYYY-MM-DD”的格式显示年月日
-  ;;%02H:%02M:%02S，更新时以“HH:MM:SS”的格式显示时分秒
-  (setq time-stamp-format
-        "此文件由 %:u 修改--最后修改时间为：%04y年%02m月%02d日 %02H时%02M分%02S秒"
-        time-stamp-active t
-        time-stamp-warn-inactive t)
+    ;;;; 在 org-mode 中运行程序代码，就涉及到 Babel;如插入C++程序
+    ;; #+begin_src C++ :includes <stdio.h>
+    ;;   int a=1;
+    ;;   int b=1;
+    ;;   int c=3;
+    ;;   printf("%d\n", a+b+c);
+    ;; #+end_s fsrc
+    ;; 需要先在 init file 中加入如下设置
+    ;; 在org输入好代码后，光标移动到 SRC block 中，使用 C-c C-c 运行代码。
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((emacs-lisp . t)
+       (C . t)
+       ;;(java . t)
+       ;;(js . t)
+       ;;(ruby . t)
+       ;;(ditaa . t)
+       (python . t)
+       (shell . t)
+       ;;(latex . t)
+       ;;(plantuml . t)
+       (R . t)))
 
 
-  ;; 设置友道翻译(2020年1月9日)，（使用时将光标放在需翻译的词（english)或汉语句开头位置，然后按快捷键C-c y, 会在回显栏显示结果。）
-  (defvar base-youdao-url "http://fanyi.youdao.com/openapi.do?keyfrom=emacs-yd-pub&key=527593631&type=data&doctype=json&version=1.1&q=")
-  ;; Get yourself an API KEY here: http://fanyi.youdao.com/openapi?path=data-mode
-  (defun youdao-fanyi ()
-    "Translate current word (en->cn, cn->en), prompt to input if no word here"
-    (interactive)
-    (let* ((word (or (thing-at-point 'word) (read-string "Translate> ")))
-           (full-url (concat base-youdao-url word)))
-      (with-current-buffer (url-retrieve-synchronously full-url)
-        (unwind-protect
-            (progn
-              (goto-char (point-min))
-              (re-search-forward "^$")
-              (delete-region (point) (point-min)) ;strip headers
-              (message
-               (elt (cdar ;we just want the straight one
-                     (json-read-from-string
-                      (decode-coding-string
-                       (buffer-string) 'utf-8)))
-                    0)))
-          (kill-buffer)))))
-  (global-set-key "\C-c\ y" 'youdao-fanyi)
+    ;;======================================================================================================
+    ;; ORG-GTD 时间、事件、计划管理
+    ;;======================================================================================================
+    ;; 设置Agenda工作目录及相应的记录文件位置
+    (defvar org-agenda-dir "" "gtd org files location")
+    (setq-default org-agenda-dir "~/org-notes")
+    (setq org-agenda-file-note (expand-file-name "notes.org" org-agenda-dir))
+    (setq org-agenda-file-gtd (expand-file-name "gtd.org" org-agenda-dir))
+    (setq org-agenda-file-journal (expand-file-name "journal.org" org-agenda-dir))
+    (setq org-agenda-file-code-snippet (expand-file-name "snippet.org" org-agenda-dir))
+    (setq org-default-notes-file (expand-file-name "gtd.org" org-agenda-dir))
+    (setq org-agenda-file-finished (expand-file-name "finished.org" org-agenda-dir))
+    (setq org-agenda-file-canceled (expand-file-name "canceled.org" org-agenda-dir))
+    (setq org-agenda-files (list org-agenda-dir))
 
-  ;;
-  ;;友道词典配置:
-  ;;注意：只有把youdao-dictionary 放到 additional()里:
-  ;; dotspacemacs-additional-packages '(youdao-dictionary)，在前面的配置中已加入。
-  ;; 并将快捷键放在dotspacemacs/user-config ()里，才能正常使用。
-  ;;在 Spacemacs 中安装 package 时最好不要使用 package-install, 因为这样安装的 package 会在下一次启动时被删除.若要使用还要再次安装。
-  ;;Install youdao-dictionary from MELPA with:（手动安装youdao-dictionary）
-  ;;M-x package-install RET youdao-dictionary RET
-  ;;此处未使用这种方法
-  ;; Enable Cache
-  (setq url-automatic-caching t)
-  ;;Key binding
-  (global-set-key (kbd "C-M-y") 'youdao-dictionary-search-at-point)
-  ;; Integrate with popwin-el (https://github.com/m2ym/popwin-el)
-  ;;(push "*Youdao Dictionary*" popwin:special-display-config)
-  ;; Set file path for saving search history
-  ;; (setq youdao-dictionary-search-history-file "~/.emacs.d/.youdao")
-  ;; Enable Chinese word segmentation support (支持中文分词)
-  (setq youdao-dictionary-use-chinese-word-segmentation t)
+    ;; 设置文件模板 ORG-Capture-templates
+    (setq org-capture-templates
+          '(("t" "Todo----------------计划" entry (file+headline org-agenda-file-gtd "Workspace")
+             "* TODO [#B] %?\n  %i\n"
+             :empty-lines 1)
+            ("n" "Notes---------------笔记" entry (file+headline org-agenda-file-note "Quick notes")
+             "* %?\n  %i\n %U"
+             :empty-lines 1)
+            ("b" "Blog Ideas----------博客" entry (file+headline org-agenda-file-note "Blog Ideas")
+             "* TODO [#B] %?\n  %i\n %U"
+             :empty-lines 1)
+            ("s" "Code Snippet--------源码" entry (file org-agenda-file-code-snippet)
+             "* %?\t%^g\n#+BEGIN_SRC %^{language}\n\n#+END_SRC")
+            ("w" "Work----------------工作" entry (file+headline org-agenda-file-gtd "Cocos2D-X")
+             "* TODO [#A] %?\n  %i\n %U"
+             :empty-lines 1)
+            ;; ("c" "Chrome--------------网页" entry (file+headline org-agenda-file-note "Quick notes")
+            ;;  "* TODO [#C] %?\n %(my/insert-chrome-current-tab-url)\n %i\n %U"
+            ;;  :empty-lines 1)
+            ("l" "Links---------------链接" entry (file+headline org-agenda-file-note "Quick notes")
+             "* TODO [#C] %?\n  %i\n %a \n %U"
+             :empty-lines 1)
+            ("j" "Journal Entry-------日记"
+             entry (file+datetree+prompt org-agenda-file-journal)
+             "* %?\n"
+             ;;"* %U - %^{heading} %^g\n %?\n"
+             :empty-lines 0)))
+
+    ;; 设置TODO关键词
+    (setq org-todo-keywords
+          '(;;(type "工作(w!)" "学习(s!)" "生活(l!)" "|")
+            (sequence "TODO(t!)" "PENDING(p!)"  "ABORT(a@/!)" "DONE(d!)" "|")
+            ))
+
+    ;; 标签tag设置
+    ;; Use org's tag feature to implement contexts.
+    (setq org-tag-alist '(("工作" . ?w)          ;;("Work" . ?w)        ;; company studio office        单位工作
+                          ("项目" . ?p)          ;;("Project" . ?p)     ;; difference task at company   工程项目
+                          ("家中" . ?h)          ;;("Home" . ?h)        ;; home                         家中事务
+                          ;;("Mail" . ?m)        ;; mail somebody 电子邮件
+                          ;;("Lunchtime" . ?l)   ;; breakfast lunchtime dinner onway etc. (rest)零碎时间
+                          ;;("Tourism" . ?t)     ;; tourism or not at home/company and any wher休闲度假
+                          ("电脑" . ?c)          ;;("Computer" . ?c)    ;; 计算机
+                          ("生活" . ?f)          ;;("Life" . ?f)        ;; 生活点滴
+                          ("阅读" . ?r)          ;;("Reading" . ?r)     ;; reading 阅读
+                          ))
+
+    ;; 设置 Agenda-view
+    ;; Custom agenda view (three parts):
+    ;; 1.High-priority(A) unfinished tasks
+    ;; 2.Normal agenda view
+    ;; 3.All normal priority tasks
+
+    ;; 设置Agenda View 增加以下自定义配置
+    (setq org-agenda-custom-commands
+          '(
+            ("c" "Simple agenda view"
+             ((tags "PRIORITY=\"A\""
+                    ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                     (org-agenda-overriding-header "
+================================================================
+ (1）High-priority unfinished tasks(紧急且未完成任务)
+================================================================")))
+              (agenda "")
+              (alltodo ""
+                       ((org-agenda-skip-function
+                         '(or (air-org-skip-subtree-if-habit)
+                              (air-org-skip-subtree-if-priority ?A)
+                              (org-agenda-skip-if nil '(scheduled deadline))))
+                        (org-agenda-overriding-header "
+\n================================================================
+（2）ALL normal priority tasks(一般任务)
+================================================================"))))
+             ((org-agenda-compact-blocks t)))
+            ("w" . "任务安排View")
+            ("wa" "重要且紧急的任务" tags-todo "+PRIORITY=\"A\"")
+            ("wb" "重要且不紧急的任务" tags-todo "-Weekly-Monthly-Daily+PRIORITY=\"B\"")
+            ("wc" "不重要且紧急的任务" tags-todo "+PRIORITY=\"C\"")
+            ("b" "Blog" tags-todo "BLOG")
+            ("p" . "项目安排View")
+            ("pw" tags-todo "PROJECT+WORK+CATEGORY=\"Program\"")
+            ("pl" tags-todo "PROJECT+DREAM+CATEGORY=\"XZLFY\"")
+            ("W" "Weekly Review"
+             ((stuck "") ;; review stuck projects as designated by org-stuck-projects
+              (tags-todo "PROJECT") ;; review all projects (assuming you use todo keywords to designate projects)
+              ))))
+    ;; 有关AgendaView的定义函数
+    (defvar org-lowest-priority)
+    (defun air-org-skip-subtree-if-priority (priority)
+      "Skip an agenda subtree if it has a priority of PRIORITY.
+   PRIORITY may be one of the characters ?A, ?B, or ?C."
+      (let ((subtree-end (save-excursion (org-end-of-subtree t)))
+            (pri-value (* 1000 (- org-lowest-priority priority)))
+            (pri-current (org-get-priority (thing-at-point 'line t))))
+        (if (= pri-value pri-current)
+            subtree-end
+          nil)))
+
+    (defun air-org-skip-subtree-if-habit ()
+      "Skip an agenda entry if it has a STYLE property equal to \"habit\"."
+      (let ((subtree-end (save-excursion (org-end-of-subtree t))))
+        (if (string= (org-entry-get nil "STYLE") "habit")
+            subtree-end
+          nil)))
+
+
+  ;;;; ORG番茄工作时间
+    (defvar org-agenda-mode-map)
+    (with-eval-after-load 'org-agenda
+      (define-key org-agenda-mode-map (kbd "P") 'org-pomodoro)
+      (spacemacs/set-leader-keys-for-major-mode 'org-agenda-mode
+        "." 'spacemacs/org-agenda-transient-state/body)
+      )
+
+;;;; Refile settings
+    ;; ;; 定义转接
+    (define-key global-map "\C-cr" 'org-refile)
+    (setq org-agenda-files (list "~/org-notes/canceled.org"
+                                 "~/org-notes/finished.org"
+                                 "~/org-notes/gtd.org"
+                                 "~/org-notes/journal.org"
+                                 "~/org-notes/notes.org"
+                                 "~/org-notes/snippet.org"
+                                 ))
+    ;; Targets include this file and any file contributing to the agenda - up to 9 levels deep
+    ;;可以在nil位置增加需要转换的其它文件，如：sy.org等（~/sy.org :maxlevel . 1)
+    (setq org-refile-targets (quote ((org-agenda-files :maxlevel . 1)
+                                     ;;(nil :maxlevel . 1)
+                                     )))
+    (use-package org-bullets
+      :hook (org-mode . org-bullets-mode)
+      :init
+      (setq org-bullets-bullet-list '("✡" "✽" "✲" "✱" "✻" "✼" "✽" "✾" "✿" "❀" "❁" "❂" "❃" "❄" "❅" "❆" "❇")))
+
+  ;;;; 打开自已的GTD文件
+  ;;;; I open my gtd file when I hit C-c g ;;
+    (defvar org-gtd-file (concat  "~/org-notes/gtd.org"))
+    (defun gtd ()
+      "Open the GTD file."
+      (interactive)
+      (find-file org-gtd-file))
+    (global-set-key (kbd "C-c g")  'gtd)
+
+  ;;;; 设置org文件打开后标题的显示方式：‘overview’, ‘content’, or ‘showall’(一级标题、二级标题、全部)
+    (defvar org-startup-folded '(showall))
+
+  ;;;;设置org-agenda-time-grid
+    (setq org-agenda-time-grid (quote ((daily today require-timed)
+                                       (300 600 900 1200 1500 1800 2100 2400)
+                                       "......" "----------------")))
+    )
+
+
+  ;;-----------------------------------------------------------------------------------------------------------
+  ;;;;===============友道字典（C-c y)==========================================================================
+  (use-package youdao-dictionary
+    :defer t
+    :bind ("C-c y" . 'youdao-dictionary-search-at-point)
+    :config
+    ;; Enable Cache
+    (setq url-automatic-caching t)
+    ;; Set file path for saving search history
+    (setq youdao-dictionary-search-history-file "~/.emacs.d/.youdao")
+    ;; Enable Chinese word segmentation support
+    (setq youdao-dictionary-use-chinese-word-segmentation t))
   ;; Usage:用法
   ;;'youdao-dictionary-search-at-point
   ;; Search word at point and display result with buffer
@@ -619,184 +874,89 @@ before packages are loaded."
   ;; Play voice of word at point (by @snyh)
   ;; ‘youdao-dictionary-play-voice-from-input
   ;; Play voice of word from input (by @snyh)
-
-  ;;日历设置（含中国农历）
+  ;;;;============================================================================================================
+  ;;-------------------中文日历-----------------------------------------------------------------------------------
   (add-to-list 'load-path "~/.emacs.d/addons/cal-china-x-master")
   (require 'cal-china-x)
-  ;; (setq mark-holidays-in-calendar t) ;;在显示日历时标出节假日(好像不起作用)
+  ;;-------------------ORG-MODE表格对齐--------------------------------------------------------------------------
+  (add-to-list 'load-path "~/.emacs.d/addons/valign-master")
+  (require 'valign)
 
-  ;;打开自已的GTD文件
-  ;; I open my gtd file when I hit C-c g ;;
-  (defvar org-gtd-file (concat  "~/org-notes/gtd.org"))
-  (defun gtd ()
-    "Open the GTD file."
-    (interactive)
-    (find-file org-gtd-file))
-  (global-set-key (kbd "C-c g")  'gtd)
 
-  ;; org-mode的GTD
-  ;; GTD，getting thing done。时间管理的方法。
-  ;; org-mode的GTD，传说很强大，可以随时记录任务。需要了解的有：
-  ;; 1. org-capture；随时记录一个任务。采用下文的配置，可以任务组分类。
-  ;; org-capture是临时加入一个任务。所有的任务查看，是利用org-agenda命令。
-  ;; 2. 任务，可以设置
-  ;; - TODO/DONE属性
-  ;; - 优先级A B C（方便分类查找）
-  ;; - tag标签（方便分类查找）
-  ;; - schedule 计划日期
-  ;; - deadline 截止期限，最后期限
+  ;;---------------------------------Common Lisp设置-------------------------------------------------------------
+  ;; Common Lisp 设置，使用M-x slime
+  (setq inferior-lisp-program "d:/Lisp/1.4.2/sbcl.exe");设置优先使用哪种Common Lisp实现
+  (add-to-list 'load-path "d:/Lisp/slime-master/");设置Slime路径
+  (require 'slime)
+  (setq slime-net-coding-system 'utf-8-unix)
+  (slime-setup)
+  (require 'slime-autoloads)
+  (slime-setup '(slime-fancy slime-scratch slime-editing-commands));让slime变得更好看，比如把sbcl的*变成CL-USER>
+  ;; 设置为中文简体语言环境括号高亮配对
+  (set-language-environment 'Chinese-GB)
+  (global-font-lock-mode t)
+  (show-paren-mode t)
+  (font-lock-add-keywords 'lisp-mode '("[(]" "[)]"))
+  (font-lock-add-keywords 'emacs-lisp-mode '("[(]" "[)]"))
+  (font-lock-add-keywords 'lisp-interaction-mode '("[(]" "[)]"))
+  (font-lock-add-keywords 'repl-mode '("[(]" "[)]"))
+  (global-set-key (kbd "C-c s") 'slime-selector)
+  (global-set-key (kbd "C-c C-]") 'slime-close-all-parens-in-sexp)
+  ;; ----------------------------------------------------------------------------------------------------------------
+  ;;;; 使 isearch 工作得像在浏览器里搜索一样: 在浏览器里，我们只需要按C-f，然后敲入所要搜索的字符串。之后只要按回车
+  ;;;; 就可以不 断地向下搜索。如果我们需要向上搜索，那么需要点击一下向上的箭头。现在我们在isearch里模拟这种情况，还
+  ;;;; 是使用C-s来调用isearch。但是之后的 repeat操作是交给了回车。
 
-  ;;GTD简单描述：
-  ;; 1. 所有org-capture的目录都在~/org-notes里；分为
-  ;; - notes.org
-  ;; - gtd.org
-  ;; - journal.org
-  ;; - snippet.org
-  ;; 2. org-capture快捷键是c-c c ；执行后，显示命令：
-  ;; 3. 第2步骤的命令，按c-c c-c之后完成，并保存在~/org-notes目录下的相应文件里。
-  ;; 4. c-c a 查看org-agenda；多了 w 任务安排 等。方便查看任务分类。
-
-  ;;Org-GTD
-
-  ;; "Configuration function for user code.
-  ;; This function is called at the very end of Spacemacs initialization after
-  ;; layers configuration.
-  ;; This is the place where most of your configurations should be done. Unless it is
-  ;; explicitly specified that a variable should be set before a package is loaded,
-  ;; you should place your code here."
-
-  (setq tramp-ssh-controlmaster-options
-        "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
-  ;; define the refile targets
-  (defvar org-agenda-dir "" "gtd org files location")
-  (setq-default org-agenda-dir "~/org-notes")
-  (setq org-agenda-file-note (expand-file-name "notes.org" org-agenda-dir))
-  (setq org-agenda-file-gtd (expand-file-name "gtd.org" org-agenda-dir))
-  (setq org-agenda-file-journal (expand-file-name "journal.org" org-agenda-dir))
-  (setq org-agenda-file-code-snippet (expand-file-name "snippet.org" org-agenda-dir))
-  (setq org-default-notes-file (expand-file-name "gtd.org" org-agenda-dir))
-  (setq org-agenda-files (list org-agenda-dir))
-
-  (with-eval-after-load 'org-agenda
-    (define-key org-agenda-mode-map (kbd "P") 'org-pomodoro)
-    (spacemacs/set-leader-keys-for-major-mode 'org-agenda-mode
-      "." 'spacemacs/org-agenda-transient-state/body)
+  (use-package isearch
+    :ensure nil
+    :bind (:map isearch-mode-map
+                ([return] . my/isearch-repeat)
+                ([escape] . isearch-exit))
+    :config
+    (defvar my/isearch--direction nil)
+    (define-advice isearch-exit (:after nil)
+      (setq-local my/isearch--direction nil))
+    (define-advice isearch-repeat-forward (:after (_))
+      (setq-local my/isearch--direction 'forward))
+    (define-advice isearch-repeat-backward (:after (_))
+      (setq-local my/isearch--direction 'backward))
     )
+  ;; 在使用isearch时在状态栏上显示如 10/100 这种状态,表示找到的当前数/总数
+  (setq isearch-lazy-count t
+        lazy-count-prefix-format "%s/%s ")
 
-  ;; the %i would copy the selected text into the template
-  ;;http://www.howardism.org/Technical/Emacs/journaling-org.html
-  ;;add multi-file journal
-  ;; ORG文件模板
-  (setq org-capture-templates
-        '(("t" "Todo----------------计划" entry (file+headline org-agenda-file-gtd "Workspace")
-           "* TODO [#B] %?\n  %i\n"
-           :empty-lines 1)
-          ("n" "Notes---------------笔记" entry (file+headline org-agenda-file-note "Quick notes")
-           "* %?\n  %i\n %U"
-           :empty-lines 1)
-          ("b" "Blog Ideas----------博客" entry (file+headline org-agenda-file-note "Blog Ideas")
-           "* TODO [#B] %?\n  %i\n %U"
-           :empty-lines 1)
-          ("s" "Code Snippet--------源码" entry (file org-agenda-file-code-snippet)
-           "* %?\t%^g\n#+BEGIN_SRC %^{language}\n\n#+END_SRC")
-          ("w" "Work----------------工作" entry (file+headline org-agenda-file-gtd "Cocos2D-X")
-           "* TODO [#A] %?\n  %i\n %U"
-           :empty-lines 1)
-          ;; ("c" "Chrome--------------网页" entry (file+headline org-agenda-file-note "Quick notes")
-          ;;  "* TODO [#C] %?\n %(my/insert-chrome-current-tab-url)\n %i\n %U"
-          ;;  :empty-lines 1)
-          ("l" "Links---------------链接" entry (file+headline org-agenda-file-note "Quick notes")
-           "* TODO [#C] %?\n  %i\n %a \n %U"
-           :empty-lines 1)
-          ("j" "Journal Entry-------日记"
-           entry (file+datetree org-agenda-file-journal)
-           "* %?"
-           :empty-lines 1)))
+  (defun my/isearch-repeat (&optional arg)
+    (interactive "P")
+    (isearch-repeat my/isearch--direction arg))
+  (define-advice isearch-exit (:after nil)
+    (setq-local my/isearch--direction nil))
 
+ ;;;; 设置org标题1-8级的字体大小和颜色，颜色摘抄自monokai。;希望org-mode标题的字体大小和正文一致，
+ ;;;;设成1.0， 如果希望标题字体大一点可以设成1.2
 
-  ;; I use org's tag feature to implement contexts.
-  ;; 标签tag设置
-  (setq org-tag-alist '(("Work" . ?w)        ;; company studio office        单位工作
-                        ("Project" . ?p)     ;; difference task at company   单位项目
-                        ("Home" . ?h)        ;; home                         家中事务
-                        ("Mail" . ?m)        ;; mail somebody                电子邮件
-                        ("Lunchtime" . ?l)   ;; breakfast lunchtime dinner onway etc. (rest)
-                        ("Tourism" . ?t)     ;; tourism or not at home/company and any where
-                        ("Computer" . ?c)    ;; 计算机
-                        ("Life" . ?f)        ;; 生活点滴
-                        ("Reading" . ?r)))   ;; reading 阅读
+  ;; (custom-set-faces
+  ;;  '(org-level-1 ((t (:inherit outline-1 :height 1.2  :foreground "#FD971F"))))
+  ;;  '(org-level-2 ((t (:inherit outline-2 :height 1.2  :foreground "#A6E22E"))))
+  ;;  '(org-level-3 ((t (:inherit outline-3 :height 1.2  :foreground "#66D9EF"))))
+  ;;  '(org-level-4 ((t (:inherit outline-4 :height 1.2  :foreground "#E6DB74"))))
+  ;;  '(org-level-5 ((t (:inherit outline-5 :height 1.2  :foreground "#A1EFE4"))))
+  ;;  '(org-level-6 ((t (:inherit outline-6 :height 1.2  :foreground "#A6E22E"))))
+  ;;  '(org-level-7 ((t (:inherit outline-7 :height 1.2  :foreground "#F92672"))))
+  ;;  '(org-level-8 ((t (:inherit outline-8 :height 1.2  :foreground "#66D9EF"))))
 
-  ;;自定义agenda-view
-  ;; Custom agenda view (three parts):
-  ;; 1.High-priority(A) unfinished tasks
-  ;; 2.Normal agenda view
-  ;; 3.All normal priority tasks
-  (defun air-org-skip-subtree-if-priority (priority)
-    "Skip an agenda subtree if it has a priority of PRIORITY.
-   PRIORITY may be one of the characters ?A, ?B, or ?C."
-    (let ((subtree-end (save-excursion (org-end-of-subtree t)))
-          (pri-value (* 1000 (- org-lowest-priority priority)))
-          (pri-current (org-get-priority (thing-at-point 'line t))))
-      (if (= pri-value pri-current)
-          subtree-end
-        nil)))
+  ;;  ) ;; end custom-set-faces
+  ;; -----------------------------------------------------------------------------------------------------------------
 
-  (defun air-org-skip-subtree-if-habit ()
-    "Skip an agenda entry if it has a STYLE property equal to \"habit\"."
-    (let ((subtree-end (save-excursion (org-end-of-subtree t))))
-      (if (string= (org-entry-get nil "STYLE") "habit")
-          subtree-end
-        nil)))
+  ;; EAF
+  ;; (use-package eaf
+  ;;   :load-path "~/.emacs.d/addons/EAF/" ; Set to "/usr/share/emacs/site-lisp/eaf" if installed from AUR
+  ;;   :custom
+  ;;   (eaf-find-alternate-file-in-dired t)
+  ;;   :config
+  ;;   (eaf-bind-key scroll_up "C-n" eaf-pdf-viewer-keybinding)
+  ;;   (eaf-bind-key scroll_down "C-p" eaf-pdf-viewer-keybinding)
+  ;;   (eaf-bind-key take_photo "p" eaf-camera-keybinding))
 
-  (setq org-agenda-custom-commands
-        '(
-          ("c" "Simple agenda view"
-           ((tags "PRIORITY=\"A\""
-                  ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
-                   (org-agenda-overriding-header "High-priority unfinished tasks(最急任务):")))
-            (agenda "")
-            (alltodo ""
-                     ((org-agenda-skip-function
-                       '(or (air-org-skip-subtree-if-priority ?A)
-                            (org-agenda-skip-if nil '(scheduled deadline))))))))
-
-          ("w" . "任务安排")
-          ("wa" "重要且紧急的任务" tags-todo "+PRIORITY=\"A\"")
-          ("wb" "重要且不紧急的任务" tags-todo "-Weekly-Monthly-Daily+PRIORITY=\"B\"")
-          ("wc" "不重要且紧急的任务" tags-todo "+PRIORITY=\"C\"")
-          ("b" "Blog" tags-todo "BLOG")
-          ("p" . "项目安排")
-          ("pw" tags-todo "PROJECT+WORK+CATEGORY=\"cocos2d-x\"")
-          ("pl" tags-todo "PROJECT+DREAM+CATEGORY=\"zilongshanren\"")
-          ("W" "Weekly Review"
-           ((stuck "") ;; review stuck projects as designated by org-stuck-projects
-            (tags-todo "PROJECT") ;; review all projects (assuming you use todo keywords to designate projects)
-            ))))
-
-  ;; ;;有一种常见的场景为在浏览网页时看到一篇文章一时看不完，要把它记下来之后再看，这个时候需要复制链接，再粘贴到Emacs中，这个过程比较烦人，
-  ;;牛人子龙山人为此提供了如下的配置，通过AppleScript，再增加一个相应的Template，可以使新增该Template的任务时自动去Chrome抓取url并粘贴
-  ;;在Emacs中，可以说是非常神奇了。
-  ;;此项在Windows上未调试成功，错误为 do-applescript 是一个空函数。（原因为applescript是苹果系统上的脚本语言程序）
-  ;; (defun my/insert-chrome-current-tab-url()
-  ;;   "Get the URL of the active tab of the first window"
-  ;;   (interactive)
-  ;;   (insert (my/retrieve-chrome-current-tab-url)))
-
-  ;; (defun my/retrieve-chrome-current-tab-url()
-  ;;   "Get the URL of the active tab of the first window"
-  ;;   (interactive)
-  ;;   (let ((result (do-applescript
-  ;;                  (concat
-  ;;                   "set frontmostApplication to path to frontmost application\n"
-  ;;                   "tell application \"Google Chrome\"\n"
-  ;;                   " set theUrl to get URL of active tab of first window\n"
-  ;;                   " set theResult to (get theUrl) \n"
-  ;;                   "end tell\n"
-  ;;                   "activate application (frontmostApplication as text)\n"
-  ;;                   "set links to {}\n"
-  ;;                   "copy theResult to the end of links\n"
-  ;;                   "return links as string\n"))))
-  ;;     (format "%s" result)))
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -806,18 +966,18 @@ before packages are loaded."
 This is an auto-generated function, do not modify its content directly, use
 Emacs customize menu instead.
 This function is called at the very end of Spacemacs initialization."
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (xterm-color shell-pop multi-term eshell-z eshell-prompt-extras esh-help youdao-dictionary yasnippet-snippets ws-butler winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill toc-org tagedit symon string-inflection spaceline-all-the-icons smeargle slim-mode scss-mode sass-mode restart-emacs rainbow-delimiters pug-mode prettier-js popwin persp-mode pcre2el password-generator paradox overseer orgit org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file neotree nameless mwim move-text magit-svn magit-gitflow macrostep lorem-ipsum link-hint indent-guide impatient-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-gitignore helm-git-grep helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu emmet-mode elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline diminish define-word counsel-projectile company-web company-statistics column-enforce-mode clean-aindent-mode centered-cursor-mode auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-)
+  (custom-set-variables
+   ;; custom-set-variables was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   '(package-selected-packages
+     '(org-grep org-noter-pdftools saveplace-pdf-view org-pdftools pdf-view-restore pdfgrep pdf-tools youdao-dictionary yasnippet-snippets ws-butler writeroom-mode winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package unfill treemacs-projectile treemacs-persp treemacs-evil toc-org symon symbol-overlay string-inflection spaceline-all-the-icons restart-emacs request rainbow-delimiters popwin pcre2el password-generator paradox pangu-spacing overseer org-projectile org-present org-pomodoro org-mime org-download org-cliplink org-bullets org-brain open-junk-file nameless mwim move-text macrostep lorem-ipsum link-hint indent-guide hybrid-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-org-rifle helm-org helm-mode-manager helm-make helm-ls-git helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot fuzzy font-lock+ flycheck-package flycheck-elsa flx-ido find-by-pinyin-dired fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump dotenv-mode diminish devdocs define-word column-enforce-mode clean-aindent-mode chinese-wbim chinese-conv centered-cursor-mode auto-yasnippet auto-highlight-symbol auto-compile aggressive-indent ace-pinyin ace-link ace-jump-helm-line ac-ispell)))
+  (custom-set-faces
+   ;; custom-set-faces was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   )
+  )
+;;
